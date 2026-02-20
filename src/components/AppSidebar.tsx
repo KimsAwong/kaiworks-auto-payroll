@@ -43,14 +43,14 @@ const financeNav = [
 const supervisorNav = [
   { title: "My Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Enter Timesheets", url: "/timesheet", icon: Clock },
-  { title: "Site Timesheets", url: "/site-timesheets", icon: ClipboardCheck },
   { title: "Contracts", url: "/contracts", icon: FileText },
   { title: "Chat", url: "/chat", icon: MessageSquare },
 ];
 
 const clerkNav = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Approve Timesheets", url: "/clerk-approvals", icon: FileSignature },
+  { title: "Authorize Timesheets", url: "/clerk-approvals", icon: FileSignature },
+  { title: "All Site Timesheets", url: "/site-timesheets", icon: ClipboardCheck },
   { title: "Projects", url: "/project-dashboard", icon: FolderKanban },
   { title: "Chat", url: "/chat", icon: MessageSquare },
 ];

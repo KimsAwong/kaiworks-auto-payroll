@@ -30,10 +30,11 @@ interface MaterialItem { item: string; quantity: number; unit: string; calculate
 interface ProductionItem { activity: string; quantity: number; unit: string }
 
 export default function SiteTimesheetsPage() {
-  const { user } = useAuth();
+  const { user, isClerk } = useAuth();
   const { toast } = useToast();
   const { data: assignments } = useMyProjectAssignments();
-  const { data: timesheets, isLoading } = useSiteTimesheets({ foremanId: user?.id });
+  // Clerks see all timesheets; supervisors see only their own
+  const { data: timesheets, isLoading } = useSiteTimesheets(isClerk ? undefined : { foremanId: user?.id });
   const createTimesheet = useCreateSiteTimesheet();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -114,8 +115,13 @@ export default function SiteTimesheetsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl md:text-3xl font-bold">Site Timesheets</h1>
-          <p className="text-muted-foreground">Record daily site work — equipment, materials, production & workers</p>
+          <p className="text-muted-foreground">
+            {isClerk
+              ? "All submitted site timesheets from supervisors — go to Authorize Timesheets to approve/reject"
+              : "Record daily site work — equipment, materials, production & workers"}
+          </p>
         </div>
+        {!isClerk && (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button className="gap-2"><Plus size={18} /> New Site Timesheet</Button>
@@ -277,6 +283,7 @@ export default function SiteTimesheetsPage() {
             </div>
           </DialogContent>
         </Dialog>
+        )}
       </div>
 
       {/* Timesheets List */}
@@ -286,7 +293,7 @@ export default function SiteTimesheetsPage() {
             <ClipboardList className="h-5 w-5 text-primary" />
             My Site Timesheets
           </CardTitle>
-          <CardDescription>All timesheets you've submitted for your assigned projects</CardDescription>
+          <CardDescription>{isClerk ? "All site timesheets submitted by supervisors" : "All timesheets you've submitted for your assigned projects"}</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (

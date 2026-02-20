@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Clock, Calendar, Send, CheckCircle2, AlertCircle, XCircle, Loader2, Filter } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useTimesheets, useCreateTimesheet, useUpdateTimesheetStatus } from "@/hooks/useTimesheets";
+import { useTimesheets, useCreateTimesheet } from "@/hooks/useTimesheets";
 import { useAllProfiles } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
 import { mapErrorToUserMessage } from "@/lib/error-utils";
@@ -47,7 +47,6 @@ export default function SupervisorTimesheetTab() {
   const { data: allProfilesData } = useAllProfiles();
   const allProfiles = allProfilesData as ProfileRow[] | null;
   const createTimesheet = useCreateTimesheet();
-  const updateStatus = useUpdateTimesheetStatus();
 
   const assignedWorkers = Array.isArray(allProfiles)
     ? allProfiles.filter(p => p.supervisor_id === user?.id)
@@ -84,15 +83,6 @@ export default function SupervisorTimesheetTab() {
       });
       toast({ title: "Timesheet submitted successfully" });
       setClockIn(''); setClockOut(''); setTaskDescription(''); setSelectedWorkerId('');
-    } catch (err: any) {
-      toast({ title: "Error", description: mapErrorToUserMessage(err), variant: "destructive" });
-    }
-  };
-
-  const handleStatusUpdate = async (id: string, status: string) => {
-    try {
-      await updateStatus.mutateAsync({ id, status, approvedBy: user?.id });
-      toast({ title: `Timesheet ${status}` });
     } catch (err: any) {
       toast({ title: "Error", description: mapErrorToUserMessage(err), variant: "destructive" });
     }
@@ -184,7 +174,7 @@ export default function SupervisorTimesheetTab() {
                   <Calendar className="h-5 w-5 text-primary" />
                   All Timesheets
                 </CardTitle>
-                <CardDescription>Review and approve worker timesheets</CardDescription>
+                <CardDescription>View timesheets you've recorded for your team</CardDescription>
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-[140px]">
@@ -218,7 +208,6 @@ export default function SupervisorTimesheetTab() {
                       <TableHead>Hours</TableHead>
                       <TableHead>Task</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -233,28 +222,11 @@ export default function SupervisorTimesheetTab() {
                         <TableCell>{Number(entry.total_hours || 0).toFixed(1)}</TableCell>
                         <TableCell className="max-w-[150px] truncate">{entry.task_description || '—'}</TableCell>
                         <TableCell>{getStatusBadge(entry.status)}</TableCell>
-                        <TableCell>
-                          {entry.status === 'pending' ? (
-                            <div className="flex gap-1">
-                              <Button size="sm" variant="ghost" className="text-success h-8 w-8 p-0" onClick={() => handleStatusUpdate(entry.id, 'approved')} title="Approve">
-                                <CheckCircle2 size={16} />
-                              </Button>
-                              <Button size="sm" variant="ghost" className="text-warning h-8 w-8 p-0" onClick={() => handleStatusUpdate(entry.id, 'flagged')} title="Flag">
-                                <AlertCircle size={16} />
-                              </Button>
-                              <Button size="sm" variant="ghost" className="text-destructive h-8 w-8 p-0" onClick={() => handleStatusUpdate(entry.id, 'rejected')} title="Reject">
-                                <XCircle size={16} />
-                              </Button>
-                            </div>
-                          ) : (
-                            <span className="text-muted-foreground text-sm">—</span>
-                          )}
-                        </TableCell>
                       </TableRow>
                     ))}
                     {filteredTimesheets.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                           No timesheets found
                         </TableCell>
                       </TableRow>
