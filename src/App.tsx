@@ -117,7 +117,7 @@ export default function App() {
               <Route
                 path="/site-timesheets"
                 element={
-                  <ProtectedRoute allowedRoles={["supervisor", "ceo"]}>
+              <ProtectedRoute allowedRoles={["supervisor", "ceo", "clerk"]}>
                     <WithLayout><SiteTimesheetsPage /></WithLayout>
                   </ProtectedRoute>
                 }
