@@ -230,10 +230,10 @@ export default function CEODashboard() {
 
       {/* Quick Actions */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Link to="/analytics"><Button variant="outline" className="w-full gap-2 h-14"><BarChart3 size={18} />Full Analytics</Button></Link>
+        <Link to="/reports"><Button variant="outline" className="w-full gap-2 h-14"><BarChart3 size={18} />Full Analytics</Button></Link>
         <Link to="/workers"><Button variant="outline" className="w-full gap-2 h-14"><Users size={18} />All Workers</Button></Link>
-        <Link to="/contracts"><Button variant="outline" className="w-full gap-2 h-14"><FileSignature size={18} />Contracts</Button></Link>
-        <Link to="/accounts"><Button variant="outline" className="w-full gap-2 h-14"><DollarSign size={18} />Accounts</Button></Link>
+        <Link to="/payroll-wizard"><Button variant="outline" className="w-full gap-2 h-14"><FileSignature size={18} />Payroll Approval</Button></Link>
+        <Link to="/payroll-history"><Button variant="outline" className="w-full gap-2 h-14"><DollarSign size={18} />Payment History</Button></Link>
       </div>
     </div>
   );

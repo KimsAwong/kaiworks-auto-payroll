@@ -1,21 +1,43 @@
-import { useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { usePayrollEntries } from "@/hooks/usePayrollEntries";
+import { usePayslips } from "@/hooks/usePayslips";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, Download } from "lucide-react";
+import { Loader2, Download, Receipt } from "lucide-react";
+import { formatKina, generateAndStorePayslipPdf } from "@/lib/payroll-engine";
+import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 
 export default function PayslipsPage() {
-  const { primaryRole, user } = useAuth();
-  const { data, isLoading } = usePayrollEntries();
-  const isWorker = primaryRole === "worker";
+  const { user } = useAuth();
+  const { data: entries, isLoading } = usePayslips();
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
-  const entries = useMemo(() => {
-    if (isWorker) return data ?? [];
-    return (data ?? []).filter((entry: any) => entry.worker_id === user?.id);
-  }, [data, isWorker, user?.id]);
+  // Fetch worker profile for PDF generation
+  const { data: profile } = useQuery({
+    queryKey: ["my-profile", user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("*").eq("id", user!.id).single();
+      return data;
+    },
+  });
+
+  const handleDownload = async (payslip: any) => {
+    if (!profile) return;
+    setDownloadingId(payslip.id);
+    try {
+      const signedUrl = await generateAndStorePayslipPdf({ payslip, worker: profile as any });
+      window.open(signedUrl, "_blank");
+    } catch (err: any) {
+      toast.error("Failed to generate PDF: " + (err.message ?? "Unknown error"));
+    } finally {
+      setDownloadingId(null);
+    }
+  };
 
   return (
     <div className="space-y-4">
