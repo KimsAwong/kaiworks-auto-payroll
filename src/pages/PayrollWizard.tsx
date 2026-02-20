@@ -69,6 +69,7 @@ export default function PayrollWizard() {
       if (!cycle) throw new Error("Cycle not found");
 
       let totalGross = 0, totalDeductions = 0, totalNet = 0, totalWorkers = 0;
+      const noRateWorkers: string[] = [];
 
       for (const worker of workers ?? []) {
         const { data: timesheets, error: tsError } = await supabase
@@ -82,11 +83,20 @@ export default function PayrollWizard() {
 
         if (!timesheets?.length) continue;
 
+        if (!worker.hourly_rate || Number(worker.hourly_rate) === 0) {
+          noRateWorkers.push(worker.full_name ?? worker.id);
+        }
+
         const result = calculateWorkerPayroll({
           worker,
           timesheets: timesheets ?? [],
           isResident: true,
         });
+
+        // Delete any existing payslip for this worker+cycle to avoid duplicates
+        await supabase.from("payslips").delete()
+          .eq("worker_id", worker.id)
+          .eq("cycle_id", cycleId);
 
         const { data: payslip, error: payslipError } = await supabase
           .from("payslips")
@@ -117,6 +127,10 @@ export default function PayrollWizard() {
         } catch (pdfErr) {
           console.warn("PDF generation skipped:", pdfErr);
         }
+      }
+
+      if (noRateWorkers.length > 0) {
+        toast.warning(`${noRateWorkers.length} worker(s) have K0 hourly rate: ${noRateWorkers.slice(0,3).join(', ')}${noRateWorkers.length > 3 ? '…' : ''}. Set their rates in Workers → Edit Profile.`);
       }
 
       // Move to verification status
@@ -213,6 +227,11 @@ export default function PayrollWizard() {
             </div>
             <div className="text-sm text-muted-foreground">
               Active workers: {loadingWorkers ? "-" : workers?.length ?? 0}
+              {!loadingWorkers && workers && workers.filter(w => !w.hourly_rate || Number(w.hourly_rate) === 0).length > 0 && (
+                <span className="ml-2 text-warning font-medium">
+                  ⚠ {workers.filter(w => !w.hourly_rate || Number(w.hourly_rate) === 0).length} worker(s) have K0.00/hr — set their rate in Workers page before running payroll
+                </span>
+              )}
             </div>
             <Button
               disabled={createCycle.isPending || !periodStart || !periodEnd}

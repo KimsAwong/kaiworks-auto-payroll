@@ -10,7 +10,9 @@ export function useTimesheets(workerId?: string) {
   return useQuery({
     queryKey: ['timesheets', workerId || user?.id, primaryRole],
     queryFn: async () => {
-      let query = db.from('timesheets').select('*').order('date', { ascending: false });
+      let query = db.from('timesheets')
+        .select('*, worker:profiles!timesheets_worker_id_fkey(id, full_name, position), supervisor:profiles!timesheets_supervisor_id_fkey(id, full_name)')
+        .order('date', { ascending: false });
       if (workerId) query = query.eq('worker_id', workerId);
       const { data, error } = await query;
       if (error) throw new Error(mapErrorToUserMessage(error));
