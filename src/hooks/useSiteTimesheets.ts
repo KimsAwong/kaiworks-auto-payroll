@@ -40,16 +40,30 @@ export function useSiteTimesheets(filters?: { projectId?: string; status?: strin
     queryFn: async () => {
       let query = db
         .from('site_timesheets')
-        .select('*, project:projects(name, location), foreman:profiles!site_timesheets_foreman_id_fkey(full_name, position)')
+        .select('*, project:projects(name, location)')
         .order('date', { ascending: false });
-      
+
       if (filters?.projectId) query = query.eq('project_id', filters.projectId);
       if (filters?.status) query = query.eq('status', filters.status);
       if (filters?.foremanId) query = query.eq('foreman_id', filters.foremanId);
 
       const { data, error } = await query;
       if (error) throw new Error(mapErrorToUserMessage(error));
-      return data as any[];
+
+      const timesheets = data as any[];
+      if (!timesheets || timesheets.length === 0) return timesheets;
+
+      // Fetch foreman profiles separately (no explicit FK in schema)
+      const foremanIds = [...new Set(timesheets.map((t: any) => t.foreman_id).filter(Boolean))];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, position')
+        .in('id', foremanIds);
+
+      return timesheets.map((t: any) => ({
+        ...t,
+        foreman: profiles?.find((p: any) => p.id === t.foreman_id) || null,
+      }));
     },
     enabled: !!user,
   });
