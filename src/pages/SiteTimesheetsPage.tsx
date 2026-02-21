@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Send, Loader2, ClipboardList, Trash2, HardHat, Package, Activity } from "lucide-react";
+import { Plus, Send, Loader2, ClipboardList, Trash2, HardHat, Package, Activity, Eye } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSiteTimesheets, useCreateSiteTimesheet } from "@/hooks/useSiteTimesheets";
 import { useMyProjectAssignments } from "@/hooks/useProjects";
@@ -36,8 +36,8 @@ export default function SiteTimesheetsPage() {
   // Clerks see all timesheets; supervisors see only their own
   const { data: timesheets, isLoading } = useSiteTimesheets(isClerk ? undefined : { foremanId: user?.id });
   const createTimesheet = useCreateSiteTimesheet();
-
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [viewEntry, setViewEntry] = useState<any>(null);
   const [projectId, setProjectId] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [shift, setShift] = useState('morning');
@@ -302,40 +302,150 @@ export default function SiteTimesheetsPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Project</TableHead>
-                    <TableHead>Shift</TableHead>
-                    <TableHead>Workers</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Remarks</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {(timesheets || []).map((ts: any) => (
-                    <TableRow key={ts.id}>
-                      <TableCell>{new Date(ts.date).toLocaleDateString()}</TableCell>
-                      <TableCell className="font-medium">{ts.project?.name || '—'}</TableCell>
-                      <TableCell className="capitalize">{ts.shift || '—'}</TableCell>
-                      <TableCell>{ts.number_of_workers}</TableCell>
-                      <TableCell>{statusBadge(ts.status)}</TableCell>
-                      <TableCell className="max-w-[200px] truncate text-sm text-muted-foreground">
-                        {ts.remarks || '—'}
-                        {ts.rejection_reason && <span className="block text-destructive text-xs">Reason: {ts.rejection_reason}</span>}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {(!timesheets || timesheets.length === 0) && (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No site timesheets yet. Create your first one!</TableCell>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Project</TableHead>
+                      <TableHead>Shift</TableHead>
+                      <TableHead>Workers</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Remarks</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  )}
+                  </TableHeader>
+                  <TableBody>
+                    {(timesheets || []).map((ts: any) => (
+                      <TableRow key={ts.id}>
+                        <TableCell>{new Date(ts.date).toLocaleDateString()}</TableCell>
+                        <TableCell className="font-medium">{ts.project?.name || '—'}</TableCell>
+                        <TableCell className="capitalize">{ts.shift || '—'}</TableCell>
+                        <TableCell>{ts.number_of_workers}</TableCell>
+                        <TableCell>{statusBadge(ts.status)}</TableCell>
+                        <TableCell className="max-w-[200px] truncate text-sm text-muted-foreground">
+                          {ts.remarks || '—'}
+                          {ts.rejection_reason && <span className="block text-destructive text-xs">Reason: {ts.rejection_reason}</span>}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="sm" className="gap-1" onClick={() => setViewEntry(ts)}>
+                            <Eye size={14} /> View
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {(!timesheets || timesheets.length === 0) && (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No site timesheets yet. Create your first one!</TableCell>
+                      </TableRow>
+                    )}
                 </TableBody>
               </Table>
             </div>
           )}
         </CardContent>
       </Card>
+
+      {/* View Detail Dialog */}
+      <Dialog open={!!viewEntry} onOpenChange={(open) => { if (!open) setViewEntry(null); }}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Site Timesheet Details</DialogTitle>
+            <DialogDescription>
+              {viewEntry?.project?.name} — {viewEntry ? new Date(viewEntry.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : ''}
+            </DialogDescription>
+          </DialogHeader>
+          {viewEntry && (
+            <div className="space-y-6">
+              {/* Summary */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Status</p>
+                  {statusBadge(viewEntry.status)}
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Shift</p>
+                  <p className="font-medium capitalize">{viewEntry.shift || '—'}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Workers</p>
+                  <p className="font-medium">{viewEntry.number_of_workers}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Foreman</p>
+                  <p className="font-medium">{viewEntry.foreman?.full_name || '—'}</p>
+                </div>
+              </div>
+
+              {viewEntry.rejection_reason && (
+                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                  <p className="text-sm font-medium text-destructive">Rejection Reason</p>
+                  <p className="text-sm text-destructive/80">{viewEntry.rejection_reason}</p>
+                </div>
+              )}
+
+              {/* Equipment */}
+              <div>
+                <h4 className="text-sm font-semibold flex items-center gap-2 mb-2"><HardHat size={16} className="text-primary" /> Equipment</h4>
+                {(viewEntry.equipment as any[])?.length > 0 ? (
+                  <Table>
+                    <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Hours Used</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                      {(viewEntry.equipment as any[]).map((eq: any, i: number) => (
+                        <TableRow key={i}><TableCell>{eq.name}</TableCell><TableCell>{eq.hours_used}</TableCell></TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : <p className="text-sm text-muted-foreground">No equipment recorded</p>}
+              </div>
+
+              {/* Materials */}
+              <div>
+                <h4 className="text-sm font-semibold flex items-center gap-2 mb-2"><Package size={16} className="text-primary" /> Materials</h4>
+                {(viewEntry.materials as any[])?.length > 0 ? (
+                  <Table>
+                    <TableHeader><TableRow><TableHead>Item</TableHead><TableHead>Qty</TableHead><TableHead>Unit</TableHead><TableHead>Calc. Kg</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                      {(viewEntry.materials as any[]).map((mat: any, i: number) => (
+                        <TableRow key={i}>
+                          <TableCell>{mat.item}</TableCell>
+                          <TableCell>{mat.quantity}</TableCell>
+                          <TableCell>{mat.unit}</TableCell>
+                          <TableCell>{mat.calculated_kg > 0 ? mat.calculated_kg : '—'}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : <p className="text-sm text-muted-foreground">No materials recorded</p>}
+              </div>
+
+              {/* Production */}
+              <div>
+                <h4 className="text-sm font-semibold flex items-center gap-2 mb-2"><Activity size={16} className="text-primary" /> Production</h4>
+                {(viewEntry.production as any[])?.length > 0 ? (
+                  <Table>
+                    <TableHeader><TableRow><TableHead>Activity</TableHead><TableHead>Qty</TableHead><TableHead>Unit</TableHead></TableRow></TableHeader>
+                    <TableBody>
+                      {(viewEntry.production as any[]).map((prod: any, i: number) => (
+                        <TableRow key={i}>
+                          <TableCell>{prod.activity}</TableCell>
+                          <TableCell>{prod.quantity}</TableCell>
+                          <TableCell>{prod.unit}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : <p className="text-sm text-muted-foreground">No production recorded</p>}
+              </div>
+
+              {/* Remarks */}
+              {viewEntry.remarks && (
+                <div>
+                  <h4 className="text-sm font-semibold mb-1">Remarks</h4>
+                  <p className="text-sm text-muted-foreground">{viewEntry.remarks}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
