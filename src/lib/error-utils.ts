@@ -5,7 +5,9 @@
 export function mapErrorToUserMessage(error: unknown): string {
   const message = (error as any)?.message?.toLowerCase() || '';
 
-  console.error('Operation error:', error);
+  if (import.meta.env.DEV) {
+    console.error('Operation error:', error);
+  }
 
   if (message.includes('duplicate key') || message.includes('unique constraint')) {
     return 'This record already exists. Please use a different value.';

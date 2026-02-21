@@ -65,7 +65,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         );
       }
     } catch (err) {
-      console.error('Error fetching profile:', err);
+      if (import.meta.env.DEV) {
+        console.error('Error fetching profile:', err);
+      }
     }
   }, []);
 

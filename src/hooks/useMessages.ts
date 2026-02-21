@@ -71,6 +71,10 @@ export function useSendMessage() {
       isBroadcast?: boolean;
       broadcastRole?: AppRole;
     }) => {
+      const trimmed = content.trim();
+      if (!trimmed || trimmed.length > 5000) {
+        throw new Error('Message must be between 1 and 5000 characters.');
+      }
       const insertData = isBroadcast
         ? {
             sender_id: senderId,

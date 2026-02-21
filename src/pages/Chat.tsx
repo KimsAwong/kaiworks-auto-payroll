@@ -54,8 +54,9 @@ export default function Chat() {
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
   const sendMessage = async () => {
-    if (!newMsg.trim() || !selectedContact || !user) return;
-    await supabase.from("messages").insert({ sender_id: user.id, receiver_id: selectedContact.id, content: newMsg.trim() });
+    const trimmed = newMsg.trim();
+    if (!trimmed || trimmed.length > 5000 || !selectedContact || !user) return;
+    await supabase.from("messages").insert({ sender_id: user.id, receiver_id: selectedContact.id, content: trimmed });
     setNewMsg("");
   };
 

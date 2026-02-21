@@ -125,7 +125,9 @@ export default function PayrollWizard() {
         try {
           await generateAndStorePayslipPdf({ payslip: payslip as any, worker });
         } catch (pdfErr) {
-          console.warn("PDF generation skipped:", pdfErr);
+          if (import.meta.env.DEV) {
+            console.warn("PDF generation skipped:", pdfErr);
+          }
         }
       }
 
