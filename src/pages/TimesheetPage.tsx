@@ -123,7 +123,7 @@ export default function TimesheetPage() {
       <div>
         <h1 className="font-display text-2xl md:text-3xl font-bold">Timesheets</h1>
         <p className="text-muted-foreground">
-          {isSupervisorOrAbove ? "Enter clock-in/out times for workers and approve timesheets" : "View your work hours entered by your supervisor"}
+          {isSupervisorOrAbove ? "Record clock-in/out times for workers — clerks will review and approve" : "View your work hours entered by your supervisor"}
         </p>
       </div>
 
@@ -227,7 +227,7 @@ export default function TimesheetPage() {
                   {isSupervisorOrAbove ? "All Timesheets" : "My Timesheets"}
                 </CardTitle>
                 <CardDescription>
-                  {isSupervisorOrAbove ? "Review and approve worker timesheets" : "Your submitted work hours"}
+                  {isSupervisorOrAbove ? "Timesheets you've recorded — pending clerk approval" : "Your submitted work hours"}
                 </CardDescription>
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -261,8 +261,7 @@ export default function TimesheetPage() {
                       <TableHead>Clock Out</TableHead>
                       <TableHead>Hours</TableHead>
                       <TableHead>Task</TableHead>
-                      <TableHead>Status</TableHead>
-                      {isSupervisorOrAbove && <TableHead>Actions</TableHead>}
+                       <TableHead>Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -279,30 +278,11 @@ export default function TimesheetPage() {
                         <TableCell>{Number(entry.total_hours || 0).toFixed(1)}</TableCell>
                         <TableCell className="max-w-[150px] truncate">{entry.task_description || '—'}</TableCell>
                         <TableCell>{getStatusBadge(entry.status)}</TableCell>
-                        {isSupervisorOrAbove && (
-                          <TableCell>
-                            {entry.status === 'pending' ? (
-                              <div className="flex gap-1">
-                                <Button size="sm" variant="ghost" className="text-success h-8 w-8 p-0" onClick={() => handleStatusUpdate(entry.id, 'approved')} title="Approve">
-                                  <CheckCircle2 size={16} />
-                                </Button>
-                                <Button size="sm" variant="ghost" className="text-warning h-8 w-8 p-0" onClick={() => handleStatusUpdate(entry.id, 'flagged')} title="Flag">
-                                  <AlertCircle size={16} />
-                                </Button>
-                                <Button size="sm" variant="ghost" className="text-destructive h-8 w-8 p-0" onClick={() => handleStatusUpdate(entry.id, 'rejected')} title="Reject">
-                                  <XCircle size={16} />
-                                </Button>
-                              </div>
-                            ) : (
-                              <span className="text-muted-foreground text-sm">—</span>
-                            )}
-                          </TableCell>
-                        )}
                       </TableRow>
                     ))}
                     {filteredTimesheets.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={isSupervisorOrAbove ? 8 : 6} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={isSupervisorOrAbove ? 7 : 6} className="text-center py-8 text-muted-foreground">
                           No timesheets found
                         </TableCell>
                       </TableRow>
