@@ -370,7 +370,10 @@ export default function SiteTimesheetsPage() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">Foreman</p>
-                  <p className="font-medium">{viewEntry.foreman?.full_name || '—'}</p>
+                  <p className="font-medium">{viewEntry.foreman?.full_name || 'Unknown'}</p>
+                  {viewEntry.foreman?.position && (
+                    <p className="text-xs text-muted-foreground">{viewEntry.foreman.position}</p>
+                  )}
                 </div>
               </div>
 
