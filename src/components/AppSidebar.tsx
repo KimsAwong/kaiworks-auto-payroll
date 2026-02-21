@@ -43,6 +43,7 @@ const financeNav = [
 const supervisorNav = [
   { title: "My Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Enter Timesheets", url: "/timesheet", icon: Clock },
+  { title: "Site Timesheets", url: "/site-timesheets", icon: ClipboardCheck },
   { title: "Contracts", url: "/contracts", icon: FileText },
   { title: "Chat", url: "/chat", icon: MessageSquare },
 ];
