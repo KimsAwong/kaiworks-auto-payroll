@@ -60,7 +60,9 @@ export default function ChatPage() {
         setMessage('');
       }
     } catch (err) {
-      console.error('Failed to send message:', err);
+      if (import.meta.env.DEV) {
+        console.error('Failed to send message:', err);
+      }
     }
   };
 
