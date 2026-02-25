@@ -70,6 +70,7 @@ export default function PayslipsPage() {
                   <TableHead>Deductions</TableHead>
                   <TableHead>Net</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -83,6 +84,22 @@ export default function PayslipsPage() {
                     <TableCell className="font-medium">K {Number(entry.net_pay ?? 0).toFixed(2)}</TableCell>
                     <TableCell>
                       <Badge variant={entry.status === "paid" ? "default" : "secondary"}>{entry.status}</Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="gap-1"
+                        disabled={downloadingId === entry.id}
+                        onClick={() => handleDownload(entry)}
+                      >
+                        {downloadingId === entry.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Download className="h-4 w-4" />
+                        )}
+                        PDF
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}

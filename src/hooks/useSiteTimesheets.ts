@@ -42,6 +42,7 @@ export function useSiteTimesheets(filters?: { projectId?: string; status?: strin
         .from('site_timesheets')
         .select('*, project:projects(name, location)')
         .order('date', { ascending: false });
+      // NOTE: foreman_id has no FK to profiles, so we fetch foreman profiles separately below
 
       if (filters?.projectId) query = query.eq('project_id', filters.projectId);
       if (filters?.status) query = query.eq('status', filters.status);
