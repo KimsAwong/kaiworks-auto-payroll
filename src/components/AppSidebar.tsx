@@ -25,10 +25,12 @@ const ceoNav = [
 
 const payrollOfficerNav = [
   { title: "Payroll Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Process Payroll", url: "/payroll-wizard", icon: Calculator },
+  { title: "Employees", url: "/workers", icon: Users },
   { title: "All Timesheets", url: "/attendance-overview", icon: Clock },
+  { title: "Run Payroll", url: "/payroll-wizard", icon: Calculator },
   { title: "Payroll History", url: "/payroll-history", icon: History },
-  { title: "All Workers", url: "/workers", icon: Users },
+  { title: "Payslips", url: "/my-payslips", icon: Receipt },
+  { title: "Reports", url: "/reports", icon: BarChart3 },
   { title: "Chat", url: "/chat", icon: MessageSquare },
 ];
 
