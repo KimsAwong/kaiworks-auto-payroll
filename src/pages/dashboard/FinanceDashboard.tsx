@@ -32,17 +32,17 @@ export default function FinanceDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl bg-gradient-primary p-6 text-primary-foreground">
+      <div className="rounded-xl bg-sidebar p-6 text-sidebar-foreground">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="font-display text-2xl md:text-3xl font-bold">
               {greeting()}, {user?.full_name?.split(' ')[0]}! 👋
             </h1>
-            <p className="text-primary-foreground/80 mt-1">
+            <p className="text-sidebar-foreground/80 mt-1">
               Finance Dashboard — Process payments & manage company budget
             </p>
           </div>
-          <Badge className="bg-primary-foreground/20 text-primary-foreground border-0 gap-1 self-start">
+          <Badge className="bg-sidebar-accent text-sidebar-accent-foreground border-0 gap-1 self-start">
             <Banknote size={14} /> Finance / Accountant
           </Badge>
         </div>
