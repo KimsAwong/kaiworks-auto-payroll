@@ -371,6 +371,7 @@ export type Database = {
       }
       payslips: {
         Row: {
+          allowance_pay: number | null
           created_at: string
           cycle_id: string | null
           deductions: number
@@ -378,18 +379,28 @@ export type Database = {
           gross_pay: number
           hourly_rate: number
           id: string
+          leave_balance_annual: number | null
+          leave_balance_sick: number | null
+          nasfund_deduction: number | null
           net_pay: number
           notes: string | null
+          other_deductions: number | null
+          overtime_pay: number | null
           paid_at: string | null
           paid_by: string | null
+          pdf_url: string | null
           period_end: string
           period_start: string
           status: Database["public"]["Enums"]["payslip_status"]
+          tax_deduction: number | null
           total_hours: number
           updated_at: string
           worker_id: string
+          ytd_super: number | null
+          ytd_tax: number | null
         }
         Insert: {
+          allowance_pay?: number | null
           created_at?: string
           cycle_id?: string | null
           deductions?: number
@@ -397,18 +408,28 @@ export type Database = {
           gross_pay?: number
           hourly_rate?: number
           id?: string
+          leave_balance_annual?: number | null
+          leave_balance_sick?: number | null
+          nasfund_deduction?: number | null
           net_pay?: number
           notes?: string | null
+          other_deductions?: number | null
+          overtime_pay?: number | null
           paid_at?: string | null
           paid_by?: string | null
+          pdf_url?: string | null
           period_end: string
           period_start: string
           status?: Database["public"]["Enums"]["payslip_status"]
+          tax_deduction?: number | null
           total_hours?: number
           updated_at?: string
           worker_id: string
+          ytd_super?: number | null
+          ytd_tax?: number | null
         }
         Update: {
+          allowance_pay?: number | null
           created_at?: string
           cycle_id?: string | null
           deductions?: number
@@ -416,16 +437,25 @@ export type Database = {
           gross_pay?: number
           hourly_rate?: number
           id?: string
+          leave_balance_annual?: number | null
+          leave_balance_sick?: number | null
+          nasfund_deduction?: number | null
           net_pay?: number
           notes?: string | null
+          other_deductions?: number | null
+          overtime_pay?: number | null
           paid_at?: string | null
           paid_by?: string | null
+          pdf_url?: string | null
           period_end?: string
           period_start?: string
           status?: Database["public"]["Enums"]["payslip_status"]
+          tax_deduction?: number | null
           total_hours?: number
           updated_at?: string
           worker_id?: string
+          ytd_super?: number | null
+          ytd_tax?: number | null
         }
         Relationships: [
           {
@@ -462,53 +492,80 @@ export type Database = {
         Row: {
           account_status: Database["public"]["Enums"]["approval_status"]
           avatar_url: string | null
+          bank_account: string | null
+          base_salary: number | null
           created_at: string
           department: string | null
           email: string | null
+          employee_id: string | null
           employment_type: Database["public"]["Enums"]["employment_type"]
           full_name: string
           hourly_rate: number | null
           id: string
           is_active: boolean
+          is_resident: boolean | null
           location: string | null
+          nasfund_number: string | null
           phone: string | null
           position: string | null
+          project_site: string | null
+          super_enabled: boolean | null
           supervisor_id: string | null
+          tin: string | null
           updated_at: string
+          worker_type: string | null
         }
         Insert: {
           account_status?: Database["public"]["Enums"]["approval_status"]
           avatar_url?: string | null
+          bank_account?: string | null
+          base_salary?: number | null
           created_at?: string
           department?: string | null
           email?: string | null
+          employee_id?: string | null
           employment_type?: Database["public"]["Enums"]["employment_type"]
           full_name: string
           hourly_rate?: number | null
           id: string
           is_active?: boolean
+          is_resident?: boolean | null
           location?: string | null
+          nasfund_number?: string | null
           phone?: string | null
           position?: string | null
+          project_site?: string | null
+          super_enabled?: boolean | null
           supervisor_id?: string | null
+          tin?: string | null
           updated_at?: string
+          worker_type?: string | null
         }
         Update: {
           account_status?: Database["public"]["Enums"]["approval_status"]
           avatar_url?: string | null
+          bank_account?: string | null
+          base_salary?: number | null
           created_at?: string
           department?: string | null
           email?: string | null
+          employee_id?: string | null
           employment_type?: Database["public"]["Enums"]["employment_type"]
           full_name?: string
           hourly_rate?: number | null
           id?: string
           is_active?: boolean
+          is_resident?: boolean | null
           location?: string | null
+          nasfund_number?: string | null
           phone?: string | null
           position?: string | null
+          project_site?: string | null
+          super_enabled?: boolean | null
           supervisor_id?: string | null
+          tin?: string | null
           updated_at?: string
+          worker_type?: string | null
         }
         Relationships: [
           {
@@ -646,15 +703,22 @@ export type Database = {
       }
       timesheets: {
         Row: {
+          allowance_amount: number | null
+          allowance_type: string | null
           approved_at: string | null
           approved_by: string | null
+          clerk_id: string | null
+          clerk_verified_at: string | null
           clock_in: string
           clock_out: string
           created_at: string
           date: string
           id: string
           notes: string | null
+          ordinary_hours: number | null
+          overtime_hours: number | null
           status: Database["public"]["Enums"]["timesheet_status"]
+          submitted_to_clerk_at: string | null
           supervisor_id: string
           task_description: string | null
           total_hours: number | null
@@ -662,15 +726,22 @@ export type Database = {
           worker_id: string
         }
         Insert: {
+          allowance_amount?: number | null
+          allowance_type?: string | null
           approved_at?: string | null
           approved_by?: string | null
+          clerk_id?: string | null
+          clerk_verified_at?: string | null
           clock_in: string
           clock_out: string
           created_at?: string
           date: string
           id?: string
           notes?: string | null
+          ordinary_hours?: number | null
+          overtime_hours?: number | null
           status?: Database["public"]["Enums"]["timesheet_status"]
+          submitted_to_clerk_at?: string | null
           supervisor_id: string
           task_description?: string | null
           total_hours?: number | null
@@ -678,15 +749,22 @@ export type Database = {
           worker_id: string
         }
         Update: {
+          allowance_amount?: number | null
+          allowance_type?: string | null
           approved_at?: string | null
           approved_by?: string | null
+          clerk_id?: string | null
+          clerk_verified_at?: string | null
           clock_in?: string
           clock_out?: string
           created_at?: string
           date?: string
           id?: string
           notes?: string | null
+          ordinary_hours?: number | null
+          overtime_hours?: number | null
           status?: Database["public"]["Enums"]["timesheet_status"]
+          submitted_to_clerk_at?: string | null
           supervisor_id?: string
           task_description?: string | null
           total_hours?: number | null
@@ -697,6 +775,13 @@ export type Database = {
           {
             foreignKeyName: "timesheets_approved_by_fkey"
             columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "timesheets_clerk_id_fkey"
+            columns: ["clerk_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -845,7 +930,13 @@ export type Database = {
         | "approved"
         | "paid"
       payslip_status: "draft" | "generated" | "paid"
-      timesheet_status: "pending" | "approved" | "flagged" | "rejected"
+      timesheet_status:
+        | "pending"
+        | "approved"
+        | "flagged"
+        | "rejected"
+        | "supervisor_approved"
+        | "clerk_verified"
       transaction_type:
         | "payroll"
         | "expense"
@@ -998,7 +1089,14 @@ export const Constants = {
         "paid",
       ],
       payslip_status: ["draft", "generated", "paid"],
-      timesheet_status: ["pending", "approved", "flagged", "rejected"],
+      timesheet_status: [
+        "pending",
+        "approved",
+        "flagged",
+        "rejected",
+        "supervisor_approved",
+        "clerk_verified",
+      ],
       transaction_type: [
         "payroll",
         "expense",

@@ -101,7 +101,7 @@ export default function App() {
               <Route
                 path="/reports"
                 element={
-                  <ProtectedRoute allowedRoles={["ceo"]}>
+                  <ProtectedRoute allowedRoles={["ceo", "payroll_officer"]}>
                     <WithLayout><CEOAnalytics /></WithLayout>
                   </ProtectedRoute>
                 }
