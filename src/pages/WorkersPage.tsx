@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Search, Loader2, Eye, ClipboardList, Info, CheckCircle, AlertCircle } from "lucide-react";
+import { Users, Search, Loader2, Eye, ClipboardList, Info, CheckCircle, AlertCircle, History } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAllProfiles } from "@/hooks/useProfile";
 import type { Database } from "@/integrations/supabase/types";
@@ -296,6 +296,11 @@ export default function WorkersPage() {
               <ClipboardList size={16} /> Fortnightly Summaries
             </TabsTrigger>
           )}
+          {isAdmin && (
+            <TabsTrigger value="history" className="gap-2">
+              <History size={16} /> Worker History
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="workers" className="space-y-4">
@@ -364,6 +369,62 @@ export default function WorkersPage() {
         {(isAdmin || isSupervisor) && (
           <TabsContent value="summaries">
             <FortnightlySummaryReview />
+          </TabsContent>
+        )}
+
+        {/* Worker History Tab */}
+        {isAdmin && (
+          <TabsContent value="history">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Employment History</CardTitle>
+                <CardDescription>Complete history of all permanent and temporary workers</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="all" className="space-y-4">
+                  <TabsList>
+                    <TabsTrigger value="all">All ({profiles?.length || 0})</TabsTrigger>
+                    <TabsTrigger value="hist-permanent">Permanent ({permanentWorkers.length})</TabsTrigger>
+                    <TabsTrigger value="hist-temporary">Temporary ({temporaryWorkers.length})</TabsTrigger>
+                  </TabsList>
+                  {['all', 'hist-permanent', 'hist-temporary'].map((tabVal) => (
+                    <TabsContent key={tabVal} value={tabVal}>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Position</TableHead>
+                            <TableHead>Type</TableHead>
+                            <TableHead>Rate</TableHead>
+                            <TableHead>Joined</TableHead>
+                            <TableHead>Status</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {(tabVal === 'all' ? profiles : tabVal === 'hist-permanent' ? permanentWorkers : temporaryWorkers)?.map((w: any) => (
+                            <TableRow key={w.id}>
+                              <TableCell>
+                                <div>
+                                  <p className="font-medium">{w.full_name}</p>
+                                  <p className="text-xs text-muted-foreground">{w.email}</p>
+                                </div>
+                              </TableCell>
+                              <TableCell>{w.position || '—'}</TableCell>
+                              <TableCell>
+                                <Badge variant="outline">{w.employment_type}</Badge>
+                              </TableCell>
+                              <TableCell>K {Number(w.hourly_rate || 0).toFixed(2)}</TableCell>
+                              <TableCell>{new Date(w.created_at).toLocaleDateString()}</TableCell>
+                              <TableCell>{getStatusBadge(w.account_status)}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TabsContent>
+                  ))}
+                </Tabs>
+              </CardContent>
+            </Card>
           </TabsContent>
         )}
       </Tabs>
